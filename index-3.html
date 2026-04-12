@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B91 by VIDI — Milan Navigli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#0e0d0b; --bg2:#161410; --card:#1c1a16;
+      --border:rgba(201,168,76,0.15); --terra:#c4714e; --gold:#c9a84c;
+      --gold-dim:rgba(201,168,76,0.5); --text:#f0ece4; --muted:#9a9488;
+      --serif:'Cormorant Garamond',Georgia,serif; --sans:'DM Sans',sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background:var(--bg); color:var(--text); font-family:var(--sans); font-weight:300; line-height:1.7; overflow-x:hidden; }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1.4rem 4rem; background:linear-gradient(to bottom,rgba(14,13,11,0.95) 60%,transparent); transition:background 0.3s; }
+    .nav-logo { font-family:var(--serif); font-size:1.5rem; font-weight:500; letter-spacing:0.04em; color:var(--text); text-decoration:none; }
+    .nav-logo span { color:var(--gold); }
+    .nav-links { display:flex; gap:2.5rem; list-style:none; }
+    .nav-links a { font-size:0.78rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-links a:hover { color:var(--gold); }
+    .nav-right { display:flex; align-items:center; gap:1rem; }
+    .nav-cta { font-size:0.78rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.6rem 1.4rem; border:1px solid var(--gold-dim); color:var(--gold); background:transparent; cursor:pointer; transition:background 0.2s,color 0.2s; text-decoration:none; white-space:nowrap; }
+    .nav-cta:hover { background:var(--gold); color:var(--bg); }
+
+    /* LANGUAGE SWITCHER */
+    .lang-switcher { display:flex; gap:0.2rem; align-items:center; }
+    .lang-btn { background:transparent; border:none; color:var(--muted); font-family:var(--sans); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:0.3rem 0.45rem; border-radius:2px; transition:color 0.2s,background 0.2s; }
+    .lang-btn:hover { color:var(--text); }
+    .lang-btn.active { color:var(--gold); background:rgba(201,168,76,0.1); }
+
+    /* HERO */
+    .hero { position:relative; height:100vh; min-height:600px; display:flex; align-items:center; justify-content:center; text-align:center; overflow:hidden; }
+    .hero-photo { position:absolute; inset:0; background:url('images/hero.jpg') center/cover no-repeat; transform:scale(1.04); transition:transform 8s ease; }
+    .hero-photo.loaded { transform:scale(1); }
+    .hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(14,13,11,0.55) 0%,rgba(14,13,11,0.35) 40%,rgba(14,13,11,0.75) 100%); }
+    .hero-content { position:relative; z-index:2; animation:fadeUp 1.2s ease both; }
+    .hero-eyebrow { font-size:0.72rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--gold); margin-bottom:1.5rem; }
+    .hero-title { font-family:var(--serif); font-size:clamp(5rem,14vw,11rem); font-weight:300; line-height:0.9; color:var(--text); }
+    .hero-title .b { color:var(--terra); }
+    .hero-by { font-family:var(--serif); font-size:clamp(1.1rem,2.5vw,1.8rem); font-weight:300; font-style:italic; color:var(--gold); letter-spacing:0.2em; margin-top:0.5rem; }
+    .hero-sub { margin-top:2rem; font-size:0.88rem; letter-spacing:0.12em; text-transform:uppercase; color:rgba(240,236,228,0.85); }
+    .hero-actions { display:flex; gap:1rem; justify-content:center; margin-top:2.5rem; }
+    .btn-primary { padding:0.8rem 2.2rem; background:var(--terra); color:var(--text); font-family:var(--sans); font-size:0.78rem; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; border:none; cursor:pointer; transition:opacity 0.2s; }
+    .btn-primary:hover { opacity:0.85; }
+    .btn-secondary { padding:0.8rem 2.2rem; border:1px solid rgba(201,168,76,0.5); color:rgba(240,236,228,0.9); font-family:var(--sans); font-size:0.78rem; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; transition:border-color 0.2s,color 0.2s; }
+    .btn-secondary:hover { border-color:var(--gold); color:var(--gold); }
+    .scroll-hint { position:absolute; bottom:2.5rem; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:rgba(240,236,228,0.6); font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; }
+    .scroll-line { width:1px; height:40px; background:linear-gradient(to bottom,var(--gold-dim),transparent); animation:scrollPulse 2s infinite; }
+
+    /* SECTIONS */
+    section { padding:7rem 4rem; }
+    .section-inner { max-width:1100px; margin:0 auto; }
+    .section-label { font-size:0.68rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; }
+    .section-title { font-family:var(--serif); font-size:clamp(2.2rem,5vw,3.5rem); font-weight:300; line-height:1.15; margin-bottom:1.5rem; }
+    .section-title em { color:var(--terra); font-style:italic; }
+    .divider { width:40px; height:1px; background:var(--gold-dim); margin-bottom:2rem; }
+
+    /* ABOUT */
+    .about { background:var(--bg2); }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+    .about-text p { color:var(--muted); margin-bottom:1.2rem; font-size:0.95rem; }
+    .about-text p strong { color:var(--text); font-weight:400; }
+    .about-photo img { width:100%; height:420px; object-fit:cover; display:block; }
+    .about-stats { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:2rem; }
+    .stat { border:1px solid var(--border); padding:1.2rem 1.4rem; position:relative; overflow:hidden; }
+    .stat::before { content:''; position:absolute; top:0; left:0; width:2px; height:100%; background:var(--terra); }
+    .stat-number { font-family:var(--serif); font-size:2.2rem; font-weight:300; color:var(--text); line-height:1; }
+    .stat-label { font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:0.3rem; }
+
+    /* GALLERY */
+    .gallery { padding:0; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(12,1fr); grid-template-rows:320px 320px; gap:4px; }
+    .gallery-item { overflow:hidden; }
+    .gallery-item img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.6s ease; }
+    .gallery-item:hover img { transform:scale(1.04); }
+    .g1{grid-column:1/6;grid-row:1} .g2{grid-column:6/9;grid-row:1} .g3{grid-column:9/13;grid-row:1}
+    .g4{grid-column:1/4;grid-row:2} .g5{grid-column:4/8;grid-row:2} .g6{grid-column:8/13;grid-row:2}
+
+    /* SPACE */
+    .space-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:3rem; }
+    .space-card { background:var(--card); border:1px solid var(--border); overflow:hidden; transition:border-color 0.3s,transform 0.3s; }
+    .space-card:hover { border-color:var(--gold-dim); transform:translateY(-3px); }
+    .space-card img { width:100%; height:200px; object-fit:cover; display:block; }
+    .space-card-body { padding:1.4rem; }
+    .space-card-icon { font-size:1.2rem; margin-bottom:0.5rem; }
+    .space-card-name { font-family:var(--serif); font-size:1.15rem; font-weight:400; margin-bottom:0.4rem; }
+    .space-card-desc { font-size:0.83rem; color:var(--muted); line-height:1.6; }
+
+    /* NEIGHBORHOOD */
+    .neighborhood { background:var(--bg2); }
+    .neigh-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-top:3rem; }
+    .place-row { display:flex; justify-content:space-between; align-items:baseline; padding:0.9rem 0; border-bottom:1px solid var(--border); }
+    .place-name { font-size:0.9rem; color:var(--text); }
+    .place-time { font-size:0.75rem; color:var(--gold); letter-spacing:0.08em; }
+    .neigh-col-title { font-family:var(--serif); font-size:1.2rem; font-weight:300; font-style:italic; color:var(--gold); margin-bottom:0.5rem; }
+
+    /* CALENDAR */
+    .cal-wrap { margin-top:3rem; }
+    .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; }
+    .cal-month-label { font-family:var(--serif); font-size:1.4rem; font-weight:300; font-style:italic; color:var(--text); }
+    .cal-nav-btn { background:transparent; border:1px solid var(--border); color:var(--muted); width:36px; height:36px; cursor:pointer; font-size:1rem; transition:border-color 0.2s,color 0.2s; display:flex; align-items:center; justify-content:center; }
+    .cal-nav-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .cal-grid-wrap { display:grid; grid-template-columns:repeat(2,1fr); gap:2.5rem; }
+    .cal-month-name { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:0.8rem; text-align:center; }
+    .cal-days-header { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:4px; }
+    .cal-day-name { text-align:center; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); padding:4px 0; }
+    .cal-days { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+    .cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:0.78rem; color:var(--text); border-radius:2px; }
+    .cal-day.past { color:var(--muted); opacity:0.4; }
+    .cal-day.booked { background:rgba(196,113,78,0.15); color:var(--terra); text-decoration:line-through; opacity:0.7; }
+    .cal-day.today { border:1px solid var(--gold-dim); color:var(--gold); font-weight:500; }
+    .cal-legend { display:flex; gap:2rem; margin-top:1.5rem; align-items:center; }
+    .cal-legend-item { display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; color:var(--muted); }
+    .leg-dot { width:12px; height:12px; border-radius:2px; }
+    .leg-dot.available { background:var(--card); border:1px solid var(--border); }
+    .leg-dot.booked { background:rgba(196,113,78,0.3); }
+    .cal-loading { text-align:center; padding:3rem; color:var(--muted); font-size:0.85rem; letter-spacing:0.1em; }
+
+    /* OTA */
+    .ota-section { background:var(--bg); border-top:1px solid var(--border); padding:4rem; text-align:center; }
+    .ota-label { font-size:0.68rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); margin-bottom:1.5rem; }
+    .ota-buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+    .ota-btn { display:inline-flex; align-items:center; gap:0.6rem; padding:0.7rem 1.6rem; border:1px solid var(--border); color:var(--muted); text-decoration:none; font-size:0.78rem; letter-spacing:0.1em; transition:border-color 0.2s,color 0.2s; }
+    .ota-btn:hover { border-color:var(--gold-dim); color:var(--text); }
+    .ota-btn svg { width:16px; height:16px; flex-shrink:0; }
+
+    /* BOOKING */
+    .booking { background:var(--bg2); }
+    .booking-wrap { display:grid; grid-template-columns:1fr 1.5fr; gap:5rem; align-items:start; }
+    .booking-info p { font-size:0.88rem; color:var(--muted); margin-bottom:1rem; }
+    .highlight { font-family:var(--serif); font-size:1.1rem; font-style:italic; color:var(--text); border-left:2px solid var(--terra); padding-left:1rem; margin:1.5rem 0; }
+    .form-group { margin-bottom:1.4rem; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    label { display:block; font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; }
+    input,select,textarea { width:100%; background:var(--card); border:1px solid var(--border); color:var(--text); font-family:var(--sans); font-size:0.9rem; padding:0.8rem 1rem; outline:none; transition:border-color 0.2s; }
+    input:focus,select:focus,textarea:focus { border-color:var(--gold-dim); }
+    select option { background:var(--card); }
+    textarea { resize:vertical; min-height:110px; }
+    .form-submit { width:100%; padding:1rem; background:var(--terra); color:var(--text); font-family:var(--sans); font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; border:none; cursor:pointer; transition:opacity 0.2s; margin-top:0.5rem; }
+    .form-submit:hover { opacity:0.85; }
+    .form-note { font-size:0.75rem; color:var(--muted); text-align:center; margin-top:0.8rem; }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:3rem 4rem; display:flex; justify-content:space-between; align-items:center; }
+    .footer-logo { font-family:var(--serif); font-size:1.2rem; color:var(--muted); }
+    .footer-logo span { color:var(--gold); }
+    .footer-copy { font-size:0.75rem; color:var(--muted); }
+    .footer-links { display:flex; gap:1.5rem; }
+    .footer-links a { font-size:0.75rem; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .footer-links a:hover { color:var(--gold); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes scrollPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+    @media (max-width:900px) {
+      nav { padding:1.2rem 1.5rem; }
+      .nav-links { display:none; }
+      section { padding:5rem 2rem; }
+      .about-grid,.neigh-grid,.booking-wrap { grid-template-columns:1fr; gap:2.5rem; }
+      .space-grid { grid-template-columns:1fr 1fr; }
+      .gallery-grid { grid-template-columns:1fr 1fr; grid-template-rows:repeat(3,220px); }
+      .g1{grid-column:1/2;grid-row:1} .g2{grid-column:2/3;grid-row:1}
+      .g3{grid-column:1/2;grid-row:2} .g4{grid-column:2/3;grid-row:2}
+      .g5{grid-column:1/2;grid-row:3} .g6{grid-column:2/3;grid-row:3}
+      footer { flex-direction:column; gap:1.5rem; text-align:center; }
+      .ota-section { padding:3rem 2rem; }
+    }
+    @media (max-width:600px) {
+      .space-grid { grid-template-columns:1fr; }
+      .about-stats { grid-template-columns:1fr 1fr; }
+      .form-row { grid-template-columns:1fr; }
+      .gallery-grid { grid-template-columns:1fr; grid-template-rows:repeat(6,220px); }
+      .g1,.g2,.g3,.g4,.g5,.g6 { grid-column:1; grid-row:auto; }
+      .nav-right { gap:0.5rem; }
+      .lang-btn { font-size:0.62rem; padding:0.2rem 0.3rem; }
+      .nav-cta { padding:0.5rem 0.9rem; font-size:0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo">B91 <span>by VIDI</span></a>
+    <ul class="nav-links">
+      <li><a href="#space" data-i18n="nav.space">The Space</a></li>
+      <li><a href="#neighborhood" data-i18n="nav.neighborhood">Navigli</a></li>
+      <li><a href="#availability" data-i18n="nav.availability">Availability</a></li>
+      <li><a href="#book" data-i18n="nav.book">Book</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="it">IT</button>
+        <button class="lang-btn" data-lang="de">DE</button>
+        <button class="lang-btn" data-lang="fr">FR</button>
+        <button class="lang-btn" data-lang="es">ES</button>
+      </div>
+      <a href="#book" class="nav-cta" data-i18n="nav.cta">Book Direct</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-photo" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Milan · Navigli · Via Francesco Brioschi</p>
+      <div class="hero-title"><span class="b">B</span>91</div>
+      <div class="hero-by">by VIDI</div>
+      <p class="hero-sub" data-i18n="hero.sub">A thoughtfully hosted apartment in the heart of Milan's most vibrant district</p>
+      <div class="hero-actions">
+        <a href="#book" class="btn-primary" data-i18n="hero.cta1">Request a Stay</a>
+        <a href="#space" class="btn-secondary" data-i18n="hero.cta2">Discover the Space</a>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span data-i18n="hero.scroll">Scroll</span>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="section-inner">
+      <div class="about-grid">
+        <div class="about-text">
+          <p class="section-label" data-i18n="about.label">The Story</p>
+          <h2 class="section-title" data-i18n="about.title">A family home,<br><em>open to the world</em></h2>
+          <div class="divider"></div>
+          <p data-i18n="about.p1">B91 is a carefully curated apartment on Via Francesco Brioschi, steps from Milan's iconic Navigli canals. We are <strong>Vincenzo and Ilenia</strong> — and B91 is the place we've poured our attention into so that every guest feels genuinely welcomed.</p>
+          <p data-i18n="about.p2">No agency. No anonymity. When you book with us, you book direct — and you'll always have a real person to reach.</p>
+          <p data-i18n="about.p3">The apartment sleeps up to <strong>4 guests</strong>, with a dedicated bedroom and a comfortable sofa bed in the living area — ideal for couples, solo travellers, or small families exploring Milan.</p>
+          <div class="about-stats">
+            <div class="stat"><div class="stat-number">2</div><div class="stat-label" data-i18n="stats.sleep">Sleep areas</div></div>
+            <div class="stat"><div class="stat-number">4</div><div class="stat-label" data-i18n="stats.guests">Max guests</div></div>
+            <div class="stat"><div class="stat-number">M2</div><div class="stat-label" data-i18n="stats.metro">Metro Famagosta</div></div>
+            <div class="stat"><div class="stat-number">15'</div><div class="stat-label" data-i18n="stats.duomo">To Duomo</div></div>
+          </div>
+        </div>
+        <div class="about-photo">
+          <img src="images/living1.jpg" alt="B91 living room" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery">
+    <div class="gallery-grid">
+      <div class="gallery-item g1"><img src="images/bedroom1.jpg" alt="Bedroom" loading="lazy" /></div>
+      <div class="gallery-item g2"><img src="images/living2.jpg" alt="Living" loading="lazy" /></div>
+      <div class="gallery-item g3"><img src="images/bathroom1.jpg" alt="Bathroom" loading="lazy" /></div>
+      <div class="gallery-item g4"><img src="images/kitchen.jpg" alt="Kitchen" loading="lazy" /></div>
+      <div class="gallery-item g5"><img src="images/living3.jpg" alt="Living sofa bed" loading="lazy" /></div>
+      <div class="gallery-item g6"><img src="images/hallway.jpg" alt="Hallway" loading="lazy" /></div>
+    </div>
+  </section>
+
+  <section id="space">
+    <div class="section-inner">
+      <p class="section-label" data-i18n="space.label">The Apartment</p>
+      <h2 class="section-title" data-i18n="space.title">Everything you need,<br><em>nothing superfluous</em></h2>
+      <div class="divider"></div>
+      <div class="space-grid">
+        <div class="space-card"><img src="images/bedroom2.jpg" alt="Bedroom" loading="lazy" /><div class="space-card-body"><div class="space-card-icon">🛏</div><div class="space-card-name" data-i18n="amenity.bedroom.name">Bedroom</div><div class="space-card-desc" data-i18n="amenity.bedroom.desc">Private room with double bed, quality linen, blackout curtains, wardrobe and TV.</div></div></div>
+        <div class="space-card"><img src="images/living1.jpg" alt="Living" loading="lazy" /><div class="space-card-body"><div class="space-card-icon">🛋</div><div class="space-card-name" data-i18n="amenity.living.name">Living & Sofa Bed</div><div class="space-card-desc" data-i18n="amenity.living.desc">Bright living room with dining table that converts into a sleeping space for 2 guests.</div></div></div>
+        <div class="space-card"><img src="images/coffee.jpg" alt="Kitchen" loading="lazy" /><div class="space-card-body"><div class="space-card-icon">🍳</div><div class="space-card-name" data-i18n="amenity.kitchen.name">Full Kitchen</div><div class="space-card-desc" data-i18n="amenity.kitchen.desc">Fully equipped with hob, oven, fridge, and a DeLonghi coffee machine with capsule selection.</div></div></div>
+        <div class="space-card"><img src="images/bathroom1.jpg" alt="Bathroom" loading="lazy" /><div class="space-card-body"><div class="space-card-icon">🚿</div><div class="space-card-name" data-i18n="amenity.bathroom.name">Bathroom</div><div class="space-card-desc" data-i18n="amenity.bathroom.desc">Tiled bathroom with shower, bidet, and curated amenities.</div></div></div>
+        <div class="space-card"><img src="images/kitchen.jpg" alt="Laundry" loading="lazy" /><div class="space-card-body"><div class="space-card-icon">🧺</div><div class="space-card-name" data-i18n="amenity.laundry.name">Washing Machine</div><div class="space-card-desc" data-i18n="amenity.laundry.desc">In-apartment Electrolux washing machine with detergent provided.</div></div></div>
+        <div class="space-card"><img src="images/living2.jpg" alt="Climate" loading="lazy" /><div class="space-card-body"><div class="space-card-icon">❄️</div><div class="space-card-name" data-i18n="amenity.climate.name">Climate & Wi-Fi</div><div class="space-card-desc" data-i18n="amenity.climate.desc">Air conditioning, heating, and high-speed fibre Wi-Fi throughout.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="neighborhood" id="neighborhood">
+    <div class="section-inner">
+      <p class="section-label" data-i18n="neigh.label">The Location</p>
+      <h2 class="section-title" data-i18n="neigh.title">Navigli — Milan's<br><em>living room</em></h2>
+      <div class="divider"></div>
+      <p style="color:var(--muted);max-width:520px;font-size:0.9rem;margin-bottom:1rem;" data-i18n="neigh.intro">The Navigli district is Milan's most vibrant neighbourhood — a network of canals lined with aperitivo bars, trattorias, vintage shops, and art studios. You'll find everything within a short walk.</p>
+      <div class="neigh-grid">
+        <div>
+          <div class="neigh-col-title" data-i18n="neigh.around">Getting around</div>
+          <div class="place-row"><span class="place-name">Metro M2 Famagosta</span><span class="place-time">5 min</span></div>
+          <div class="place-row"><span class="place-name">Duomo di Milano</span><span class="place-time">15 min</span></div>
+          <div class="place-row"><span class="place-name">Milano Centrale</span><span class="place-time">20 min</span></div>
+          <div class="place-row"><span class="place-name" data-i18n="neigh.mxp">Malpensa Airport</span><span class="place-time">45 min</span></div>
+          <div class="place-row"><span class="place-name" data-i18n="neigh.linate">Linate Airport</span><span class="place-time">35 min</span></div>
+        </div>
+        <div>
+          <div class="neigh-col-title" data-i18n="neigh.highlights">Nearby highlights</div>
+          <div class="place-row"><span class="place-name" data-i18n="neigh.navigli">Navigli canals & aperitivo</span><span class="place-time">10 min</span></div>
+          <div class="place-row"><span class="place-name">Darsena</span><span class="place-time">12 min</span></div>
+          <div class="place-row"><span class="place-name" data-i18n="neigh.market">Porta Genova market</span><span class="place-time">8 min</span></div>
+          <div class="place-row"><span class="place-name" data-i18n="neigh.super">Supermarket & pharmacy</span><span class="place-time">3 min</span></div>
+          <div class="place-row"><span class="place-name">Pinacoteca di Brera</span><span class="place-time">25 min</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="availability">
+    <div class="section-inner">
+      <p class="section-label" data-i18n="cal.label">Availability</p>
+      <h2 class="section-title" data-i18n="cal.title">Check <em>open dates</em></h2>
+      <div class="divider"></div>
+      <div class="cal-wrap">
+        <div id="cal-loading" class="cal-loading" data-i18n="cal.loading">Loading calendar…</div>
+        <div id="cal-content" style="display:none">
+          <div class="cal-header">
+            <button class="cal-nav-btn" id="cal-prev">&#8592;</button>
+            <div class="cal-month-label" id="cal-label"></div>
+            <button class="cal-nav-btn" id="cal-next">&#8594;</button>
+          </div>
+          <div class="cal-grid-wrap" id="cal-grid"></div>
+          <div class="cal-legend">
+            <div class="cal-legend-item"><div class="leg-dot available"></div><span data-i18n="cal.available">Available</span></div>
+            <div class="cal-legend-item"><div class="leg-dot booked"></div><span data-i18n="cal.booked">Booked</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ota-section">
+    <p class="ota-label" data-i18n="ota.label">Prefer to book on a platform you already know?</p>
+    <div class="ota-buttons">
+      <a href="https://www.airbnb.it/rooms/1618077159648429077" target="_blank" rel="noopener" class="ota-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 2 4 7 4 12c0 2.5 1.5 5 4 7l4 3 4-3c2.5-2 4-4.5 4-7 0-5-4-10-8-10z"/></svg>
+        Airbnb
+      </a>
+      <a href="https://www.booking.com/Share-TXWAZZ" target="_blank" rel="noopener" class="ota-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 4v5"/></svg>
+        Booking.com
+      </a>
+      <a href="https://www.vrbo.com/it-it/affitto-vacanze/p12062154" target="_blank" rel="noopener" class="ota-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l5 3"/></svg>
+        VRBO
+      </a>
+    </div>
+  </div>
+
+  <section class="booking" id="book">
+    <div class="section-inner">
+      <div class="booking-wrap">
+        <div class="booking-info">
+          <p class="section-label" data-i18n="book.label">Book Direct</p>
+          <h2 class="section-title" data-i18n="book.title">Stay with <em>us</em></h2>
+          <div class="divider"></div>
+          <p data-i18n="book.p1">Booking directly with us means no platform fees — and a direct line to Vincenzo & Ilenia for anything you need before, during, or after your stay.</p>
+          <div class="highlight" data-i18n="book.quote">"We'll get back to you within 24 hours with availability and a quote."</div>
+          <p data-i18n="book.times">Check-in: <strong style="color:var(--text)">15:00 — 20:00</strong><br>Check-out: <strong style="color:var(--text)">by 11:00</strong></p>
+          <p style="margin-top:1.5rem" data-i18n="book.contact">Questions? Write to us at<br><strong style="color:var(--gold)">b91byvidi@gmail.com</strong></p>
+        </div>
+        <form id="booking-form" action="https://formspree.io/f/xjgjbwgo" method="POST">
+          <div class="form-row">
+            <div class="form-group"><label data-i18n="form.fname">First name</label><input type="text" name="first_name" placeholder="Mario" required /></div>
+            <div class="form-group"><label data-i18n="form.lname">Last name</label><input type="text" name="last_name" placeholder="Rossi" required /></div>
+          </div>
+          <div class="form-group"><label data-i18n="form.email">Email</label><input type="email" name="email" placeholder="mario@example.com" required /></div>
+          <div class="form-row">
+            <div class="form-group"><label data-i18n="form.checkin">Check-in</label><input type="date" name="checkin" required /></div>
+            <div class="form-group"><label data-i18n="form.checkout">Check-out</label><input type="date" name="checkout" required /></div>
+          </div>
+          <div class="form-group">
+            <label data-i18n="form.guests">Guests</label>
+            <select name="guests" id="guests-select">
+              <option data-i18n="form.g1">1 guest</option>
+              <option selected data-i18n="form.g2">2 guests</option>
+              <option data-i18n="form.g3">3 guests</option>
+              <option data-i18n="form.g4">4 guests</option>
+            </select>
+          </div>
+          <div class="form-group"><label data-i18n="form.message">Message (optional)</label><textarea name="message" data-i18n-placeholder="form.placeholder"></textarea></div>
+          <button type="submit" class="form-submit" data-i18n="form.submit">Send Booking Request</button>
+          <p class="form-note" data-i18n="form.note">We'll confirm within 24 hours. No payment required to enquire.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">B91 <span>by VIDI</span></div>
+    <div class="footer-copy">© 2025 B91 by VIDI · Via Francesco Brioschi 91, Milan</div>
+    <div class="footer-links">
+      <a href="#space" data-i18n="nav.space">The Space</a>
+      <a href="#neighborhood">Navigli</a>
+      <a href="#book" data-i18n="nav.book">Book</a>
+    </div>
+  </footer>
+
+  <script>
+  // ── TRANSLATIONS ──────────────────────────────
+  const i18n = {
+    en: {
+      'nav.space':'The Space','nav.neighborhood':'Navigli','nav.availability':'Availability','nav.book':'Book','nav.cta':'Book Direct',
+      'hero.sub':"A thoughtfully hosted apartment in the heart of Milan's most vibrant district",
+      'hero.cta1':'Request a Stay','hero.cta2':'Discover the Space','hero.scroll':'Scroll',
+      'about.label':'The Story','about.title':'A family home,<br><em>open to the world</em>',
+      'about.p1':'B91 is a carefully curated apartment on Via Francesco Brioschi, steps from Milan\'s iconic Navigli canals. We are <strong>Vincenzo and Ilenia</strong> — and B91 is the place we\'ve poured our attention into so that every guest feels genuinely welcomed.',
+      'about.p2':'No agency. No anonymity. When you book with us, you book direct — and you\'ll always have a real person to reach.',
+      'about.p3':'The apartment sleeps up to <strong>4 guests</strong>, with a dedicated bedroom and a comfortable sofa bed in the living area — ideal for couples, solo travellers, or small families exploring Milan.',
+      'stats.sleep':'Sleep areas','stats.guests':'Max guests','stats.metro':'Metro Famagosta','stats.duomo':'To Duomo',
+      'space.label':'The Apartment','space.title':'Everything you need,<br><em>nothing superfluous</em>',
+      'amenity.bedroom.name':'Bedroom','amenity.bedroom.desc':'Private room with double bed, quality linen, blackout curtains, wardrobe and TV.',
+      'amenity.living.name':'Living & Sofa Bed','amenity.living.desc':'Bright living room with dining table that converts into a sleeping space for 2 guests.',
+      'amenity.kitchen.name':'Full Kitchen','amenity.kitchen.desc':'Fully equipped with hob, oven, fridge, and a DeLonghi coffee machine with capsule selection.',
+      'amenity.bathroom.name':'Bathroom','amenity.bathroom.desc':'Tiled bathroom with shower, bidet, and curated amenities.',
+      'amenity.laundry.name':'Washing Machine','amenity.laundry.desc':'In-apartment Electrolux washing machine with detergent provided.',
+      'amenity.climate.name':'Climate & Wi-Fi','amenity.climate.desc':'Air conditioning, heating, and high-speed fibre Wi-Fi throughout.',
+      'neigh.label':'The Location','neigh.title':'Navigli — Milan\'s<br><em>living room</em>',
+      'neigh.intro':"The Navigli district is Milan's most vibrant neighbourhood — a network of canals lined with aperitivo bars, trattorias, vintage shops, and art studios. You'll find everything within a short walk.",
+      'neigh.around':'Getting around','neigh.highlights':'Nearby highlights',
+      'neigh.mxp':'Malpensa Airport','neigh.linate':'Linate Airport',
+      'neigh.navigli':'Navigli canals & aperitivo','neigh.market':'Porta Genova market','neigh.super':'Supermarket & pharmacy',
+      'cal.label':'Availability','cal.title':'Check <em>open dates</em>','cal.loading':'Loading calendar…','cal.available':'Available','cal.booked':'Booked',
+      'ota.label':'Prefer to book on a platform you already know?',
+      'book.label':'Book Direct','book.title':'Stay with <em>us</em>',
+      'book.p1':'Booking directly with us means no platform fees — and a direct line to Vincenzo & Ilenia for anything you need before, during, or after your stay.',
+      'book.quote':'"We\'ll get back to you within 24 hours with availability and a quote."',
+      'book.times':'Check-in: <strong style="color:var(--text)">15:00 — 20:00</strong><br>Check-out: <strong style="color:var(--text)">by 11:00</strong>',
+      'book.contact':'Questions? Write to us at<br><strong style="color:var(--gold)">b91byvidi@gmail.com</strong>',
+      'form.fname':'First name','form.lname':'Last name','form.email':'Email','form.checkin':'Check-in','form.checkout':'Check-out',
+      'form.guests':'Guests','form.g1':'1 guest','form.g2':'2 guests','form.g3':'3 guests','form.g4':'4 guests',
+      'form.message':'Message (optional)','form.placeholder':'Tell us about your trip, any special requests…',
+      'form.submit':'Send Booking Request','form.note':"We'll confirm within 24 hours. No payment required to enquire."
+    },
+    it: {
+      'nav.space':"L'Appartamento",'nav.neighborhood':'Navigli','nav.availability':'Disponibilità','nav.book':'Prenota','nav.cta':'Prenota Diretto',
+      'hero.sub':'Un appartamento curato nel cuore del quartiere più vivace di Milano',
+      'hero.cta1':'Richiedi un Soggiorno','hero.cta2':'Scopri lo Spazio','hero.scroll':'Scorri',
+      'about.label':'La Storia','about.title':'Una casa di famiglia,<br><em>aperta al mondo</em>',
+      'about.p1':'B91 è un appartamento curato nei minimi dettagli in Via Francesco Brioschi, a pochi passi dai celebri Navigli. Siamo <strong>Vincenzo e Ilenia</strong> — e B91 è il luogo in cui abbiamo riversato tutta la nostra attenzione affinché ogni ospite si senta davvero il benvenuto.',
+      'about.p2':'Nessuna agenzia. Nessun anonimato. Prenotando con noi prenoti direttamente — e avrai sempre una persona reale a cui rivolgerti.',
+      'about.p3':"L'appartamento ospita fino a <strong>4 persone</strong>, con una camera da letto privata e un comodo divano letto in soggiorno — ideale per coppie, viaggiatori solitari o piccole famiglie che visitano Milano.",
+      'stats.sleep':'Zone notte','stats.guests':'Ospiti max','stats.metro':'Metro Famagosta','stats.duomo':'Dal Duomo',
+      'space.label':"L'Appartamento",'space.title':'Tutto quello che serve,<br><em>niente di superfluo</em>',
+      'amenity.bedroom.name':'Camera da letto','amenity.bedroom.desc':'Stanza privata con letto matrimoniale, biancheria di qualità, tende oscuranti, armadio e TV.',
+      'amenity.living.name':'Soggiorno e Divano Letto','amenity.living.desc':'Soggiorno luminoso con tavolo da pranzo che si trasforma in zona notte per 2 ospiti.',
+      'amenity.kitchen.name':'Cucina Completa','amenity.kitchen.desc':'Completamente attrezzata con piano cottura, forno, frigorifero e macchina DeLonghi con capsule.',
+      'amenity.bathroom.name':'Bagno','amenity.bathroom.desc':'Bagno piastrellato con doccia, bidet e amenities curate.',
+      'amenity.laundry.name':'Lavatrice','amenity.laundry.desc':'Lavatrice Electrolux in appartamento con detersivo incluso.',
+      'amenity.climate.name':'Clima e Wi-Fi','amenity.climate.desc':"Aria condizionata, riscaldamento e fibra ad alta velocità in tutto l'appartamento.",
+      'neigh.label':'La Posizione','neigh.title':'Navigli — il salotto<br><em>di Milano</em>',
+      'neigh.intro':"Il quartiere Navigli è il più vivace di Milano — una rete di canali fiancheggiati da bar per l'aperitivo, trattorie, negozi vintage e studi d'arte. Troverai tutto a breve distanza a piedi.",
+      'neigh.around':'Come muoversi','neigh.highlights':'Nelle vicinanze',
+      'neigh.mxp':'Aeroporto Malpensa','neigh.linate':'Aeroporto Linate',
+      'neigh.navigli':'Navigli e aperitivo','neigh.market':'Mercato Porta Genova','neigh.super':'Supermercato e farmacia',
+      'cal.label':'Disponibilità','cal.title':'Controlla le <em>date libere</em>','cal.loading':'Caricamento calendario…','cal.available':'Disponibile','cal.booked':'Occupato',
+      'ota.label':'Preferisci prenotare su una piattaforma che già conosci?',
+      'book.label':'Prenota Diretto','book.title':'Soggiorna con <em>noi</em>',
+      'book.p1':'Prenotare direttamente con noi significa nessuna commissione — e un contatto diretto con Vincenzo e Ilenia per qualsiasi esigenza prima, durante o dopo il soggiorno.',
+      'book.quote':'"Ti risponderemo entro 24 ore con disponibilità e preventivo."',
+      'book.times':'Check-in: <strong style="color:var(--text)">15:00 — 20:00</strong><br>Check-out: <strong style="color:var(--text)">entro le 11:00</strong>',
+      'book.contact':'Hai domande? Scrivici a<br><strong style="color:var(--gold)">b91byvidi@gmail.com</strong>',
+      'form.fname':'Nome','form.lname':'Cognome','form.email':'Email','form.checkin':'Check-in','form.checkout':'Check-out',
+      'form.guests':'Ospiti','form.g1':'1 ospite','form.g2':'2 ospiti','form.g3':'3 ospiti','form.g4':'4 ospiti',
+      'form.message':'Messaggio (opzionale)','form.placeholder':'Raccontaci del tuo viaggio, richieste speciali…',
+      'form.submit':'Invia Richiesta di Prenotazione','form.note':'Ti confermeremo entro 24 ore. Nessun pagamento richiesto per la richiesta.'
+    },
+    de: {
+      'nav.space':'Die Wohnung','nav.neighborhood':'Navigli','nav.availability':'Verfügbarkeit','nav.book':'Buchen','nav.cta':'Direkt Buchen',
+      'hero.sub':'Eine liebevoll eingerichtete Wohnung im Herzen von Mailands lebendigstem Viertel',
+      'hero.cta1':'Aufenthalt anfragen','hero.cta2':'Die Wohnung entdecken','hero.scroll':'Scrollen',
+      'about.label':'Die Geschichte','about.title':'Ein Familienheim,<br><em>offen für die Welt</em>',
+      'about.p1':'B91 ist eine sorgfältig gestaltete Wohnung in der Via Francesco Brioschi, nur wenige Schritte von Mailands berühmten Navigli-Kanälen. Wir sind <strong>Vincenzo und Ilenia</strong> — und B91 ist der Ort, in den wir viel Liebe gesteckt haben, damit sich jeder Gast wirklich willkommen fühlt.',
+      'about.p2':'Keine Agentur. Keine Anonymität. Wenn Sie bei uns buchen, buchen Sie direkt — und Sie erreichen immer eine echte Person.',
+      'about.p3':'Die Wohnung bietet Platz für bis zu <strong>4 Gäste</strong>, mit einem privaten Schlafzimmer und einem bequemen Schlafsofa im Wohnzimmer — ideal für Paare, Alleinreisende oder kleine Familien.',
+      'stats.sleep':'Schlafbereiche','stats.guests':'Max. Gäste','stats.metro':'U-Bahn Famagosta','stats.duomo':'Zum Dom',
+      'space.label':'Die Wohnung','space.title':'Alles was Sie brauchen,<br><em>nichts Überflüssiges</em>',
+      'amenity.bedroom.name':'Schlafzimmer','amenity.bedroom.desc':'Privates Zimmer mit Doppelbett, hochwertiger Bettwäsche, Verdunkelungsvorhängen, Schrank und TV.',
+      'amenity.living.name':'Wohnzimmer & Schlafsofa','amenity.living.desc':'Helles Wohnzimmer mit Esstisch, der sich in einen Schlafbereich für 2 Gäste verwandeln lässt.',
+      'amenity.kitchen.name':'Voll ausgestattete Küche','amenity.kitchen.desc':'Komplett ausgestattet mit Herd, Backofen, Kühlschrank und DeLonghi-Kaffeemaschine.',
+      'amenity.bathroom.name':'Badezimmer','amenity.bathroom.desc':'Gefliestes Badezimmer mit Dusche, Bidet und hochwertigen Pflegeprodukten.',
+      'amenity.laundry.name':'Waschmaschine','amenity.laundry.desc':'Electrolux-Waschmaschine in der Wohnung, Waschmittel inklusive.',
+      'amenity.climate.name':'Klima & WLAN','amenity.climate.desc':'Klimaanlage, Heizung und schnelles Glasfaser-WLAN in der ganzen Wohnung.',
+      'neigh.label':'Die Lage','neigh.title':'Navigli — Mailands<br><em>Wohnzimmer</em>',
+      'neigh.intro':'Das Navigli-Viertel ist Mailands lebendigstes Viertel — ein Netz von Kanälen gesäumt von Aperitivo-Bars, Trattorien, Vintage-Shops und Ateliers. Alles ist zu Fuß erreichbar.',
+      'neigh.around':'Anreise & Verkehr','neigh.highlights':'In der Nähe',
+      'neigh.mxp':'Flughafen Malpensa','neigh.linate':'Flughafen Linate',
+      'neigh.navigli':'Navigli-Kanäle & Aperitivo','neigh.market':'Markt Porta Genova','neigh.super':'Supermarkt & Apotheke',
+      'cal.label':'Verfügbarkeit','cal.title':'<em>Freie Termine</em> prüfen','cal.loading':'Kalender wird geladen…','cal.available':'Verfügbar','cal.booked':'Belegt',
+      'ota.label':'Lieber über eine bekannte Plattform buchen?',
+      'book.label':'Direkt Buchen','book.title':'Wohnen Sie bei <em>uns</em>',
+      'book.p1':'Eine Direktbuchung bei uns bedeutet keine Plattformgebühren — und einen direkten Draht zu Vincenzo & Ilenia für alles, was Sie vor, während oder nach Ihrem Aufenthalt benötigen.',
+      'book.quote':'"Wir melden uns innerhalb von 24 Stunden mit Verfügbarkeit und Angebot."',
+      'book.times':'Check-in: <strong style="color:var(--text)">15:00 — 20:00 Uhr</strong><br>Check-out: <strong style="color:var(--text)">bis 11:00 Uhr</strong>',
+      'book.contact':'Fragen? Schreiben Sie uns:<br><strong style="color:var(--gold)">b91byvidi@gmail.com</strong>',
+      'form.fname':'Vorname','form.lname':'Nachname','form.email':'E-Mail','form.checkin':'Anreise','form.checkout':'Abreise',
+      'form.guests':'Gäste','form.g1':'1 Gast','form.g2':'2 Gäste','form.g3':'3 Gäste','form.g4':'4 Gäste',
+      'form.message':'Nachricht (optional)','form.placeholder':'Erzählen Sie uns von Ihrer Reise, besondere Wünsche…',
+      'form.submit':'Buchungsanfrage senden','form.note':'Wir bestätigen innerhalb von 24 Stunden. Keine Zahlung für die Anfrage erforderlich.'
+    },
+    fr: {
+      'nav.space':"L'Appartement",'nav.neighborhood':'Navigli','nav.availability':'Disponibilité','nav.book':'Réserver','nav.cta':'Réserver en Direct',
+      'hero.sub':"Un appartement soigneusement aménagé au cœur du quartier le plus animé de Milan",
+      'hero.cta1':'Demander un séjour','hero.cta2':"Découvrir l'espace",'hero.scroll':'Défiler',
+      'about.label':"L'Histoire",'about.title':'Une maison de famille,<br><em>ouverte sur le monde</em>',
+      'about.p1':"B91 est un appartement soigneusement aménagé Via Francesco Brioschi, à deux pas des célèbres Navigli de Milan. Nous sommes <strong>Vincenzo et Ilenia</strong> — et B91 est l'endroit dans lequel nous avons mis tout notre soin pour que chaque hôte se sente vraiment le bienvenu.",
+      'about.p2':"Pas d'agence. Pas d'anonymat. En réservant chez nous, vous réservez en direct — et vous aurez toujours une vraie personne à votre disposition.",
+      'about.p3':"L'appartement peut accueillir jusqu'à <strong>4 personnes</strong>, avec une chambre privée et un confortable canapé-lit dans le salon — idéal pour les couples, les voyageurs solo ou les petites familles.",
+      'stats.sleep':'Espaces nuit','stats.guests':'Hôtes max','stats.metro':'Métro Famagosta','stats.duomo':'Du Dôme',
+      'space.label':"L'Appartement",'space.title':'Tout ce qu\'il faut,<br><em>rien de superflu</em>',
+      'amenity.bedroom.name':'Chambre','amenity.bedroom.desc':'Chambre privée avec lit double, linge de qualité, rideaux occultants, armoire et TV.',
+      'amenity.living.name':'Salon & Canapé-lit','amenity.living.desc':'Salon lumineux avec table à manger se transformant en espace nuit pour 2 personnes.',
+      'amenity.kitchen.name':'Cuisine complète','amenity.kitchen.desc':'Entièrement équipée avec plaques, four, réfrigérateur et machine DeLonghi à capsules.',
+      'amenity.bathroom.name':'Salle de bain','amenity.bathroom.desc':'Salle de bain carrelée avec douche, bidet et produits de soin sélectionnés.',
+      'amenity.laundry.name':'Machine à laver','amenity.laundry.desc':'Lave-linge Electrolux dans l\'appartement, lessive fournie.',
+      'amenity.climate.name':'Climatisation & Wi-Fi','amenity.climate.desc':'Climatisation, chauffage et fibre optique dans tout l\'appartement.',
+      'neigh.label':"L'Emplacement",'neigh.title':'Navigli — le salon<br><em>de Milan</em>',
+      'neigh.intro':"Le quartier Navigli est le plus animé de Milan — un réseau de canaux bordés de bars à apéritif, trattorias, boutiques vintage et ateliers. Tout est accessible à pied.",
+      'neigh.around':'Se déplacer','neigh.highlights':'À proximité',
+      'neigh.mxp':'Aéroport Malpensa','neigh.linate':'Aéroport Linate',
+      'neigh.navigli':'Canaux Navigli & apéritif','neigh.market':'Marché Porta Genova','neigh.super':'Supermarché & pharmacie',
+      'cal.label':'Disponibilité','cal.title':'Vérifier les <em>dates libres</em>','cal.loading':'Chargement du calendrier…','cal.available':'Disponible','cal.booked':'Réservé',
+      'ota.label':'Vous préférez réserver sur une plateforme que vous connaissez déjà ?',
+      'book.label':'Réservation Directe','book.title':'Séjournez chez <em>nous</em>',
+      'book.p1':'Réserver directement chez nous signifie aucune commission — et un contact direct avec Vincenzo & Ilenia pour tout ce dont vous avez besoin avant, pendant ou après votre séjour.',
+      'book.quote':'"Nous vous répondrons dans les 24 heures avec les disponibilités et un devis."',
+      'book.times':'Check-in : <strong style="color:var(--text)">15h00 — 20h00</strong><br>Check-out : <strong style="color:var(--text)">avant 11h00</strong>',
+      'book.contact':'Des questions ? Écrivez-nous à<br><strong style="color:var(--gold)">b91byvidi@gmail.com</strong>',
+      'form.fname':'Prénom','form.lname':'Nom','form.email':'E-mail','form.checkin':'Arrivée','form.checkout':'Départ',
+      'form.guests':'Voyageurs','form.g1':'1 voyageur','form.g2':'2 voyageurs','form.g3':'3 voyageurs','form.g4':'4 voyageurs',
+      'form.message':'Message (optionnel)','form.placeholder':'Parlez-nous de votre voyage, demandes spéciales…',
+      'form.submit':'Envoyer la demande de réservation','form.note':'Nous confirmerons dans les 24 heures. Aucun paiement requis pour la demande.'
+    },
+    es: {
+      'nav.space':'El Apartamento','nav.neighborhood':'Navigli','nav.availability':'Disponibilidad','nav.book':'Reservar','nav.cta':'Reserva Directa',
+      'hero.sub':'Un apartamento cuidadosamente acondicionado en el corazón del barrio más vibrante de Milán',
+      'hero.cta1':'Solicitar estancia','hero.cta2':'Descubrir el espacio','hero.scroll':'Deslizar',
+      'about.label':'La Historia','about.title':'Un hogar familiar,<br><em>abierto al mundo</em>',
+      'about.p1':'B91 es un apartamento cuidadosamente preparado en Via Francesco Brioschi, a pocos pasos de los icónicos Navigli de Milán. Somos <strong>Vincenzo e Ilenia</strong> — y B91 es el lugar en el que hemos volcado toda nuestra atención para que cada huésped se sienta genuinamente bienvenido.',
+      'about.p2':'Sin agencias. Sin anonimato. Al reservar con nosotros, reservas directamente — y siempre habrá una persona real al otro lado.',
+      'about.p3':'El apartamento tiene capacidad para <strong>4 huéspedes</strong>, con un dormitorio privado y un cómodo sofá cama en el salón — ideal para parejas, viajeros solos o familias pequeñas.',
+      'stats.sleep':'Zonas de descanso','stats.guests':'Huéspedes máx.','stats.metro':'Metro Famagosta','stats.duomo':'Al Duomo',
+      'space.label':'El Apartamento','space.title':'Todo lo que necesitas,<br><em>nada superfluo</em>',
+      'amenity.bedroom.name':'Dormitorio','amenity.bedroom.desc':'Habitación privada con cama de matrimonio, ropa de cama de calidad, cortinas opacas, armario y TV.',
+      'amenity.living.name':'Salón y Sofá Cama','amenity.living.desc':'Luminoso salón con mesa de comedor que se convierte en zona de descanso para 2 huéspedes.',
+      'amenity.kitchen.name':'Cocina completa','amenity.kitchen.desc':'Totalmente equipada con cocina, horno, nevera y cafetera DeLonghi con selección de cápsulas.',
+      'amenity.bathroom.name':'Baño','amenity.bathroom.desc':'Baño alicatado con ducha, bidé y artículos de tocador seleccionados.',
+      'amenity.laundry.name':'Lavadora','amenity.laundry.desc':'Lavadora Electrolux en el apartamento, detergente incluido.',
+      'amenity.climate.name':'Clima y Wi-Fi','amenity.climate.desc':'Aire acondicionado, calefacción y fibra óptica de alta velocidad en todo el apartamento.',
+      'neigh.label':'La Ubicación','neigh.title':'Navigli — el salón<br><em>de Milán</em>',
+      'neigh.intro':'El barrio de Navigli es el más vibrante de Milán — una red de canales bordeados de bares de aperitivo, trattorias, tiendas vintage y estudios de arte. Todo está a un corto paseo.',
+      'neigh.around':'Cómo moverse','neigh.highlights':'Lugares cercanos',
+      'neigh.mxp':'Aeropuerto Malpensa','neigh.linate':'Aeropuerto Linate',
+      'neigh.navigli':'Canales Navigli & aperitivo','neigh.market':'Mercado Porta Genova','neigh.super':'Supermercado y farmacia',
+      'cal.label':'Disponibilidad','cal.title':'Consultar <em>fechas libres</em>','cal.loading':'Cargando calendario…','cal.available':'Disponible','cal.booked':'Reservado',
+      'ota.label':'¿Prefieres reservar en una plataforma que ya conoces?',
+      'book.label':'Reserva Directa','book.title':'Quédate con <em>nosotros</em>',
+      'book.p1':'Reservar directamente con nosotros significa sin comisiones — y contacto directo con Vincenzo e Ilenia para cualquier cosa que necesites antes, durante o después de tu estancia.',
+      'book.quote':'"Te responderemos en 24 horas con disponibilidad y presupuesto."',
+      'book.times':'Check-in: <strong style="color:var(--text)">15:00 — 20:00</strong><br>Check-out: <strong style="color:var(--text)">antes de las 11:00</strong>',
+      'book.contact':'¿Preguntas? Escríbenos a<br><strong style="color:var(--gold)">b91byvidi@gmail.com</strong>',
+      'form.fname':'Nombre','form.lname':'Apellido','form.email':'Email','form.checkin':'Llegada','form.checkout':'Salida',
+      'form.guests':'Huéspedes','form.g1':'1 huésped','form.g2':'2 huéspedes','form.g3':'3 huéspedes','form.g4':'4 huéspedes',
+      'form.message':'Mensaje (opcional)','form.placeholder':'Cuéntanos sobre tu viaje, peticiones especiales…',
+      'form.submit':'Enviar solicitud de reserva','form.note':'Confirmaremos en 24 horas. No se requiere pago para la consulta.'
+    }
+  };
+
+  // ── LANGUAGE ENGINE ───────────────────────────
+  let currentLang = localStorage.getItem('b91lang') || 'en';
+
+  function applyLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('b91lang', lang);
+    document.documentElement.lang = lang;
+    const t = i18n[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+    renderCalendar();
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+  });
+
+  // ── HERO ─────────────────────────────────────
+  const heroBg = document.getElementById('heroBg');
+  setTimeout(() => heroBg.classList.add('loaded'), 100);
+  window.addEventListener('scroll', () => {
+    const s = window.scrollY;
+    heroBg.style.transform = `translateY(${s * 0.3}px)`;
+    document.querySelector('nav').style.background = s > 80
+      ? 'rgba(14,13,11,0.97)'
+      : 'linear-gradient(to bottom,rgba(14,13,11,0.95) 60%,transparent)';
+  });
+
+  // ── FORM ─────────────────────────────────────
+  document.getElementById('booking-form').addEventListener('submit', function(e) {
+    const action = this.getAttribute('action');
+    if (action.includes('YOUR_FORM_ID')) {
+      e.preventDefault();
+      const btn = this.querySelector('.form-submit');
+      btn.textContent = '✓';
+      btn.style.background = '#4a7c59';
+      btn.disabled = true;
+      setTimeout(() => { btn.innerHTML = i18n[currentLang]['form.submit']; btn.style.background = ''; btn.disabled = false; this.reset(); }, 4000);
+    }
+  });
+
+  // ── CALENDAR ─────────────────────────────────
+  let bookedDates = new Set();
+  let calOffset = 0;
+
+  async function loadCalendars() {
+    try {
+      const res = await fetch('/.netlify/functions/calendar');
+      const data = await res.json();
+      if (data.booked) data.booked.forEach(d => bookedDates.add(d));
+    } catch(e) {}
+    document.getElementById('cal-loading').style.display = 'none';
+    document.getElementById('cal-content').style.display = 'block';
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    const el = document.getElementById('cal-content');
+    if (!el || el.style.display === 'none') return;
+    const now = new Date();
+    const base = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
+    const months = [
+      new Date(base.getFullYear(), base.getMonth(), 1),
+      new Date(base.getFullYear(), base.getMonth() + 1, 1)
+    ];
+    const locale = { en:'en-GB', it:'it-IT', de:'de-DE', fr:'fr-FR', es:'es-ES' }[currentLang] || 'en-GB';
+    document.getElementById('cal-label').textContent = months.map(m =>
+      m.toLocaleDateString(locale, { month:'long', year:'numeric' })
+    ).join(' — ');
+    document.getElementById('cal-grid').innerHTML = months.map(m => renderMonth(m, now, locale)).join('');
+  }
+
+  function renderMonth(date, today, locale) {
+    const year = date.getFullYear(), month = date.getMonth();
+    const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const dayNames = {
+      'en-GB':['Mo','Tu','We','Th','Fr','Sa','Su'],
+      'it-IT':['Lu','Ma','Me','Gi','Ve','Sa','Do'],
+      'de-DE':['Mo','Di','Mi','Do','Fr','Sa','So'],
+      'fr-FR':['Lu','Ma','Me','Je','Ve','Sa','Di'],
+      'es-ES':['Lu','Ma','Mi','Ju','Vi','Sa','Do']
+    };
+    const days = dayNames[locale] || dayNames['en-GB'];
+    const monthName = date.toLocaleDateString(locale, { month:'long', year:'numeric' });
+    let html = `<div class="cal-month"><div class="cal-month-name">${monthName}</div><div class="cal-days-header">${days.map(d => `<div class="cal-day-name">${d}</div>`).join('')}</div><div class="cal-days">`;
+    for (let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const thisDate = new Date(year, month, d);
+      const iso = thisDate.toISOString().slice(0, 10);
+      const isPast = thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const isToday = iso === today.toISOString().slice(0, 10);
+      const isBooked = bookedDates.has(iso);
+      let cls = 'cal-day';
+      if (isPast) cls += ' past'; else if (isBooked) cls += ' booked';
+      if (isToday) cls += ' today';
+      html += `<div class="${cls}">${d}</div>`;
+    }
+    return html + `</div></div>`;
+  }
+
+  document.getElementById('cal-prev').addEventListener('click', () => { if (calOffset > 0) { calOffset--; renderCalendar(); } });
+  document.getElementById('cal-next').addEventListener('click', () => { if (calOffset < 10) { calOffset++; renderCalendar(); } });
+
+  // ── INIT ─────────────────────────────────────
+  loadCalendars();
+  applyLang(currentLang);
+  </script>
+</body>
+</html>

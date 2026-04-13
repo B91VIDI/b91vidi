@@ -354,7 +354,7 @@
           <p data-i18n="book.p1">Booking directly with us means no platform fees — and a direct line to Vincenzo & Ilenia for anything you need before, during, or after your stay.</p>
           <div class="highlight" data-i18n="book.quote">"We'll get back to you within 24 hours with availability and a quote."</div>
           <p data-i18n="book.times">Check-in: <strong style="color:var(--text)">15:00 — 20:00</strong><br>Check-out: <strong style="color:var(--text)">by 11:00</strong></p>
-          <p style="margin-top:1.5rem" data-i18n="book.contact">Questions? Write to us at<br><strong style="color:var(--gold)">b91byvidi@gmail.com</strong></p>
+          <p style="margin-top:1.5rem" data-i18n="book.contact">Questions? Write to us at<br><strong style="color:var(--gold)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e2c777f2c3738272a270e29232f2722602d2123">[email&#160;protected]</a></strong></p>
         </div>
         <form id="booking-form" action="https://formspree.io/f/xjgjbwgo" method="POST">
           <div class="form-row">
@@ -393,7 +393,7 @@
     </div>
   </footer>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ── TRANSLATIONS ──────────────────────────────
   const i18n = {
     en: {
@@ -661,9 +661,9 @@
     for (let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
     for (let d = 1; d <= daysInMonth; d++) {
       const thisDate = new Date(year, month, d);
-      const iso = thisDate.toISOString().slice(0, 10);
+      const iso = `${thisDate.getFullYear()}-${String(thisDate.getMonth()+1).padStart(2,'0')}-${String(thisDate.getDate()).padStart(2,'0')}`;
       const isPast = thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const isToday = iso === today.toISOString().slice(0, 10);
+      const todayIso = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`; const isToday = iso === todayIso;
       const isBooked = bookedDates.has(iso);
       let cls = 'cal-day';
       if (isPast) cls += ' past'; else if (isBooked) cls += ' booked';
@@ -674,11 +674,4 @@
   }
 
   document.getElementById('cal-prev').addEventListener('click', () => { if (calOffset > 0) { calOffset--; renderCalendar(); } });
-  document.getElementById('cal-next').addEventListener('click', () => { if (calOffset < 10) { calOffset++; renderCalendar(); } });
-
-  // ── INIT ─────────────────────────────────────
-  loadCalendars();
-  applyLang(currentLang);
-  </script>
-</body>
-</html>
+  document.getElementById('cal-next').addEventListener('click', () => { if (calOffset < 10) { calOffset+

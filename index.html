@@ -674,4 +674,11 @@
   }
 
   document.getElementById('cal-prev').addEventListener('click', () => { if (calOffset > 0) { calOffset--; renderCalendar(); } });
-  document.getElementById('cal-next').addEventListener('click', () => { if (calOffset < 10) { calOffset+
+  document.getElementById('cal-next').addEventListener('click', () => { if (calOffset < 10) { calOffset++; renderCalendar(); } });
+
+  // ── INIT ─────────────────────────────────────
+  loadCalendars();
+  applyLang(currentLang);
+  </script>
+</body>
+</html>

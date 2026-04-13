@@ -4,6 +4,14 @@ const ICAL_FEEDS = [
   'http://www.vrbo.com/icalendar/31a33644c9f2486d9e1738d62ccd5b2e.ics'
 ];
 
+// Format date as YYYY-MM-DD using LOCAL date components (avoids UTC timezone shift)
+function toLocalDateString(d) {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 function parseIcalDate(val) {
   const s = val.replace(/T.*/, '').replace(/-/g, '');
   if (s.length < 8) return null;
@@ -25,8 +33,9 @@ function parseIcal(text) {
     else if (line === 'END:VEVENT') {
       if (start && end) {
         let d = new Date(start);
+        // DTEND in iCal is exclusive (checkout day) — stop before it
         while (d < end) {
-          dates.add(d.toISOString().slice(0, 10));
+          dates.add(toLocalDateString(d));
           d.setDate(d.getDate() + 1);
         }
       }
@@ -62,7 +71,7 @@ exports.handler = async function() {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=3600' // cache 1 hour
+      'Cache-Control': 'public, max-age=3600'
     },
     body: JSON.stringify({ booked: [...allDates] })
   };

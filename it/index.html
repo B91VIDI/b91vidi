@@ -784,6 +784,45 @@ img{display:block;max-width:100%}
   .ota-source:last-child{border-bottom:0}
 }
 
+
+/* ---------- MOBILE FIX / 07 DIRECT BOOKING ---------- */
+@media(max-width:900px){
+  .book-section.v8-book .book-wrap{
+    grid-template-columns:1fr;
+    gap:52px;
+    padding:82px 2vw 82px;
+  }
+  .book-section.v8-book .book-copy{max-width:680px}
+  .book-section.v8-book .booking-card.v8{
+    width:100%;max-width:720px;justify-self:stretch;
+  }
+}
+@media(max-width:520px){
+  .book-section.v8-book{padding-left:16px;padding-right:16px}
+  .book-section.v8-book .book-wrap{
+    display:grid;grid-template-columns:minmax(0,1fr);gap:42px;padding:66px 0 62px;
+  }
+  .book-section.v8-book .book-copy h2{font-size:44px;line-height:.98;max-width:9ch}
+  .book-section.v8-book .book-copy p{font-size:10px;line-height:1.85;max-width:33em}
+  .direct-benefit{grid-template-columns:104px 1fr;gap:18px;padding:24px 0;align-items:center}
+  .direct-benefit .discount{font-size:50px}
+  .booking-card.v8{width:100%;min-width:0}
+  .booking-card.v8 .booking-head{padding:26px 20px 22px;gap:18px}
+  .booking-card.v8 .booking-head h3{font-size:32px;line-height:1.03;max-width:10ch}
+  .booking-card.v8 .booking-head .status{align-self:flex-start}
+  .booking-card.v8 .booking-body{padding:22px 20px 26px}
+  .booking-card.v8 .booking-grid{grid-template-columns:1fr}
+  .booking-card.v8 .field{min-height:102px;padding:19px 18px}
+  .booking-flow{grid-template-columns:1fr 1fr;margin-top:26px}
+  .flow-step{min-height:96px}
+  .whatsapp-submit,.email-submit{min-height:56px;padding:0 16px}
+}
+@media(max-width:360px){
+  .book-section.v8-book .book-copy h2{font-size:40px}
+  .direct-benefit{grid-template-columns:1fr}
+  .booking-flow{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
